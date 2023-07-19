@@ -45,12 +45,22 @@ class SQLDatabase(LangchainSQLDatabase):
         """Get table info for a single table."""
         # same logic as table_info, but with specific table names
         template = (
-            "Table '{table_name}' has columns: {columns} "
-            "and foreign keys: {foreign_keys}."
+            # RG Modified below so inclusion of foreign_keys is conditional
+            # "Table '{table_name}' has columns: {columns} "
+            # "and foreign keys: {foreign_keys}."
+            "Table '{table_name}' has columns: {columns}"
         )
+        # RG allow column comments to be included in context, and selection of cols
         columns = []
         for column in self._inspector.get_columns(table_name):
-            columns.append(f"{column['name']} ({str(column['type'])})")
+            base_info = f"{column['name']} ({str(column['type'])})"
+            col_comment = column['comment'] # None if the comment is empty
+            if col_comment:
+                columns.append(base_info + f" description '{str(col_comment)}'")
+            else:
+                pass
+                # Uncomment to include all cols, even those with no comment/description
+                # columns.append(base_info) 
         column_str = ", ".join(columns)
         foreign_keys = []
         for foreign_key in self._inspector.get_foreign_keys(table_name):
@@ -60,8 +70,12 @@ class SQLDatabase(LangchainSQLDatabase):
             )
         foreign_key_str = ", ".join(foreign_keys)
         table_str = template.format(
-            table_name=table_name, columns=column_str, foreign_keys=foreign_key_str
+            table_name=table_name, columns=column_str
         )
+        # Only add ref to FKs if they actually exist.
+        if foreign_key_str:
+            table_str = table_str[:-1] + f" and foreign keys: {foreign_keys}."
+
         return table_str
 
     def insert_into_table(self, table_name: str, data: dict) -> None:
