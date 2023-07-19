@@ -354,7 +354,7 @@ class NLSQLTableQueryEngine(BaseSQLTableQueryEngine):
                 table_info = self._sql_database.get_single_table_info(table_str)
 
                 if self._context_query_kwargs.get(table_str, None) is not None:
-                    table_opt_context = " The table description is: "
+                    table_opt_context = "" # The table description is: "
                     table_opt_context += self._context_query_kwargs[table_str]
                     table_info += table_opt_context
 
@@ -367,7 +367,7 @@ class NLSQLTableQueryEngine(BaseSQLTableQueryEngine):
                 table_info = self._sql_database.get_single_table_info(table_name)
 
                 if self._context_query_kwargs.get(table_name, None) is not None:
-                    table_opt_context = " The table description is: "
+                    table_opt_context = "" # The table description is: "
                     table_opt_context += self._context_query_kwargs[table_name]
                     table_info += table_opt_context
 
@@ -422,7 +422,7 @@ class SQLTableRetrieverQueryEngine(BaseSQLTableQueryEngine):
             )
 
             if table_schema_obj.context_str:
-                table_opt_context = " The table description is: "
+                table_opt_context = "" # The table description is: "
                 table_opt_context += table_schema_obj.context_str
                 table_info += table_opt_context
 
